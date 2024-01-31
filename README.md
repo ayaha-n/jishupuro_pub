@@ -4,7 +4,7 @@
 ```
 pip3 install python-dotenv
 ```
-として、./envというファイルに
+として、.envというファイルに
 ```
 api_key = “<API_KEY>”
 ```
