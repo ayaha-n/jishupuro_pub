@@ -1,5 +1,17 @@
 # jishupuro
 
+## APIキーの設定
+```
+pip3 install python-dotenv
+```
+として、./envというファイルに
+```
+api_key = “<API_KEY>”
+```
+を書き込む
+参考：https://qiita.com/wooooo/items/7b57eaf32c22195df843
+
+
 ## 実行方法（radxaで操作する場合）
 - ipはM5ATOM S3に表示される。ディズプレイをつないで`ip a`としてもよい。
 - sshして（　`ssh rock@<ip>`)
