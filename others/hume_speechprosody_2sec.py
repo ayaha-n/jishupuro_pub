@@ -1,0 +1,96 @@
+import asyncio, time, wave, argparse
+from dotenv import load_dotenv                                                  
+load_dotenv()                                                                   
+import os
+
+from hume import HumeStreamClient, StreamSocket
+from hume.models.config import ProsodyConfig
+
+def read_audio_data(file_path, chunk_size):
+    #ファイルから音声データを読み込み、2秒ごとに分ける
+    with wave.open(file_path, 'rb') as wave_file:
+        sample_width = wave_file.getsampwidth()
+        channels = wave_file.getnchannels()
+        frame_rate = wave_file.getframerate()
+        chunk_frames = int(frame_rate * 2)  # 2 seconds of audio
+        total_frames = wave_file.getnframes()
+
+        while True:
+            audio_data = wave_file.readframes(chunk_frames)
+            if not audio_data:
+                break
+            yield audio_data
+
+def classify_emotions(pred):
+#humeにおける感情分析では種類が多すぎるので7種に分割
+    star_scores = []
+    heart_scores = []
+    sad_scores = []
+    angry_scores = []
+    tired_scores = []
+    happy_scores = []
+    neutral_scores = []
+
+    for emotion in pred['emotions']: #predは辞書であってリストではないので上の行とまとめて書くのは無理
+        if emotion['name'] in ['Excitement','Interest','Admiration','Surprise (positive)','desire','Triumph', 'Ecstasy']: #orで結ぶならif emotion['name'] == 'Excitement' or emotion['name'] == 'Interest' or ...
+            star_scores.append(emotion['score'])
+        elif emotion['name'] in ['Adoration','Love','Entrancement','Romance']:
+            heart_scores.append(emotion['score'])
+        elif emotion['name'] in ['Awkwardness','Disappointment','Distress','Anxiety','Sadness','Pain','Surprise (negative)','Fear','Empathic Pain','Horror']:
+            sad_scores.append(emotion['score'])  
+        elif emotion['name'] in ['Anger', 'Disgust']:                                                     
+            angry_scores.append(emotion['score'])  
+        elif emotion['name'] in ['Boredom','Tiredness','Contempt','Doubt']:     
+            tired_scores.append(emotion['score'])
+        elif emotion['name'] in ['Joy','Satisfaction','Amusement','Relief','Contentment','Aesthetic Appreciation']:
+            happy_scores.append(emotion['score'])
+        elif emotion['name'] in ['Calmness','Awe','Confusion','Embarrassment','Envy','Sympathy','Pride','Realization','Determination','Nostalgia','Craving','Concentration','Contemplation','Guilt','Shame']:                
+            neutral_scores.append(emotion['score'])
+            
+    avg_star_score = sum(star_scores)/len(star_scores) if star_scores else 0
+    avg_heart_score = sum(heart_scores)/len(heart_scores) if heart_scores else 0  
+    avg_sad_score = sum(sad_scores)/len(sad_scores) if sad_scores else 0  
+    avg_angry_score = sum(angry_scores)/len(angry_scores) if angry_scores else 0  
+    avg_tired_score = sum(tired_scores)/len(tired_scores) if tired_scores else 0  
+    avg_happy_score = sum(happy_scores)/len(happy_scores) if happy_scores else 0  
+    avg_neutral_score = sum(neutral_scores)/len(neutral_scores) if neutral_scores else 0
+
+    state = max([
+        ('star', avg_star_score),
+        ('heart', avg_heart_score),
+        ('sad', avg_sad_score),
+        ('angry', avg_angry_score),
+        ('tired', avg_tired_score),
+        ('happy', avg_happy_score),
+        ('neutral', avg_neutral_score)
+    ], key=lambda x: x[1])
+
+    state_name, state_score = state
+    
+    print(f"The dominant emotion is {state_name} with a score of {state_score}")
+
+            
+async def main(file_path):
+    client = HumeStreamClient(os.getenv('api_key'))
+    config = ProsodyConfig()
+    chunk_size = 1024
+    async with client.connect([config]) as socket:
+        for audio_data in read_audio_data(file_path, chunk_size):
+            result = await socket.send_file(file_path)
+            print(result)
+            for pred in result['prosody']['predictions']:
+                emotions_sorted = sorted(pred['emotions'], key=lambda x: -x['score'])
+                emotions_sorted = emotions_sorted[:8] #score上位８個を取り出す
+                for emotion in emotions_sorted:
+                    print(emotion)
+                #print(emotions_sorted[0])
+                classify_emotions(pred)
+            await asyncio.sleep(2)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Process audio file with Hume API')
+    parser.add_argument('--file-path', type=str, help='Path to the audio file', required=True)
+    args = parser.parse_args()
+
+
+    asyncio.run(main(args.file_path))
