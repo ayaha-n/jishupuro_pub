@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # スクリプトを実行するディレクトリに移動する（必要に応じて変更）
-cd ~/jishupuro
+cd ~/jishupuro_pub
 
 # launch ファイルを実行
 roslaunch capture.launch &
