@@ -150,7 +150,7 @@ audio_buffer = AudioBuffer(
     auto_start=True)
 #api_key = os.getenv('api_key')
 
-api_key = os.environ.get('HUME_API')
+api_key = "utjx9xeqrdqJxOQ33vpKZLK3q2vCyhZucpmqZ3YVHBCJAqYy"
 
 def on_shutdown():
     print('on_shutdown called')
@@ -233,6 +233,7 @@ async def classify_emotions(pred):
     
     print(f"The dominant emotion is {state_name} with a score of {state_score}")
 #    await asyncio.sleep(1)
+
     
 async def set_eye_status(state_name):                                                                                                                                          
     if state_name == 'neutral':                                                                                                                                                

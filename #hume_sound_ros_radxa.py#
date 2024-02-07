@@ -28,6 +28,7 @@ import soundfile as sf
 
 # from audio_buffer import AudioBuffer
 from std_msgs.msg import UInt16
+from ros_speak import play_sound
 
 class AudioBuffer(object):
 
@@ -233,6 +234,7 @@ async def classify_emotions(pred):
     
     print(f"The dominant emotion is {state_name} with a score of {state_score}")
 #    await asyncio.sleep(1)
+
     
 async def set_eye_status(state_name):                                                                                                                                          
     if state_name == 'neutral':                                                                                                                                                
@@ -311,7 +313,7 @@ async def send_audio():
 #main関数
 # ROSノードを初期化
 #rospy.init_node('eye_status_publisher', anonymous=True)
-
+play_sound('package://rostwitter/resource/camera.wav', topic_name='robotsound_jp')
 # Publisherを作成
 eye_status_publisher = rospy.Publisher('/eye_status', UInt16, queue_size=1)
 

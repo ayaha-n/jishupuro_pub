@@ -1,0 +1,7 @@
+;;
+(ros::roseus "test3")
+(load "package://pr2eus/speak.l")
+(play-sound
+ (pathname (ros::resolve-ros-path "package://rostwitter/resource/camera.wav"))
+	   :topic-name "/robotsound_jp"
+	   :wait t)
