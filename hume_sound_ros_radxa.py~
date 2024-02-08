@@ -28,6 +28,7 @@ import soundfile as sf
 
 # from audio_buffer import AudioBuffer
 from std_msgs.msg import UInt16
+from ros_speak import play_sound
 
 class AudioBuffer(object):
 
@@ -150,7 +151,7 @@ audio_buffer = AudioBuffer(
     auto_start=True)
 #api_key = os.getenv('api_key')
 
-api_key = "utjx9xeqrdqJxOQ33vpKZLK3q2vCyhZucpmqZ3YVHBCJAqYy"
+api_key = os.environ.get('HUME_API')
 
 def on_shutdown():
     print('on_shutdown called')
@@ -312,7 +313,7 @@ async def send_audio():
 #main関数
 # ROSノードを初期化
 #rospy.init_node('eye_status_publisher', anonymous=True)
-
+play_sound('package://rostwitter/resource/camera.wav', topic_name='robotsound_jp')
 # Publisherを作成
 eye_status_publisher = rospy.Publisher('/eye_status', UInt16, queue_size=1)
 

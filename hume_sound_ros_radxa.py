@@ -29,7 +29,7 @@ import soundfile as sf
 # from audio_buffer import AudioBuffer
 from std_msgs.msg import UInt16
 from ros_speak import play_sound
-
+from pathlib import Path
 class AudioBuffer(object):
 
     def __init__(self, topic_name='~audio',
@@ -313,7 +313,13 @@ async def send_audio():
 #main関数
 # ROSノードを初期化
 #rospy.init_node('eye_status_publisher', anonymous=True)
-play_sound('package://rostwitter/resource/camera.wav', topic_name='robotsound_jp')
+#play_sound('package://rostwitter/resource/camera.wav', topic_name='robotsound_jp')
+#play_sound(sound='home/rock/jishupuro_pub/purugacha.wav', topic_name='robotsound_jp')
+#file_path = Path("/home/rock/jishupuro_pub/purugacha.wav")
+#play_sound(sound=str(file_path), topic_name='robotsound_jp')
+play_sound('package://jishupuro_pkg/purugacha.wav', topic_name='robotsound_\
+jp', wait=True) 
+
 # Publisherを作成
 eye_status_publisher = rospy.Publisher('/eye_status', UInt16, queue_size=1)
 
@@ -321,4 +327,3 @@ eye_status_publisher = rospy.Publisher('/eye_status', UInt16, queue_size=1)
 state_name = 'neutral'  # 初期値を設定
 
 asyncio.run(send_audio())
-
