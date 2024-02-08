@@ -317,7 +317,7 @@ async def send_audio():
 #play_sound(sound='home/rock/jishupuro_pub/purugacha.wav', topic_name='robotsound_jp')
 #file_path = Path("/home/rock/jishupuro_pub/purugacha.wav")
 #play_sound(sound=str(file_path), topic_name='robotsound_jp')
-play_sound('package://jishupuro_pkg/purugacha.wav', topic_name='robotsound_\
+play_sound('package://jishupuro_pkg/resource/purugacha.wav', topic_name='robotsound_\
 jp', wait=True) 
 
 # Publisherを作成
